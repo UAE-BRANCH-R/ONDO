@@ -115,7 +115,7 @@ canvas#cc{display:block;width:100%}
     <div class="sc2-div"></div>
     <div class="sc2-blk" style="align-items:flex-end">
       <div class="sc2-lbl">CURRENT SERIAL</div>
-      <div class="sc2-cur" id="cur-serial">4</div>
+      <div class="sc2-cur" id="cur-serial">10</div>
     </div>
   </div>
 
@@ -136,7 +136,7 @@ canvas#cc{display:block;width:100%}
 
 <script>
 const HOLDINGS   = 207;
-const START_PRICE= 11.52;
+const START_PRICE= 10.02;
 const DAILY_DROP = 1.00;
 const DAY_ZERO   = new Date('2026-06-08T00:00:00Z');
 
@@ -149,7 +149,7 @@ function getDayPrice(d){
 
 const dayNum       = getDayNum();
 const dayBasePrice = getDayPrice(dayNum);
-document.getElementById('cur-serial').textContent = 64 + dayNum * 89;
+document.getElementById('cur-serial').textContent = 71 + dayNum * 89;
 
 let livePrice = dayBasePrice, prevPrice = dayBasePrice, currentTF = '1h';
 
