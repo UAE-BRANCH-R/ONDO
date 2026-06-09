@@ -11,10 +11,10 @@
   --mono:'Share Tech Mono',monospace;--ui:'Rajdhani',sans-serif;
 }
 html,body{background:var(--bg);color:var(--text);font-family:var(--ui);width:100%;overflow-x:hidden}
-.app{display:flex;flex-direction:column;width:100%;min-height:100vh}
+.app{display:flex;flex-direction:column;width:100%;min-height:100vh;background:var(--bg)}
 .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .tb-left{display:flex;flex-direction:column;gap:1px}
-.tb-pair{font-size:16px;font-weight:600;letter-spacing:1px}
+.tb-pair{font-size:16px;font-weight:600;letter-spacing:1px;color:var(--text)}
 .tb-price{font-family:var(--mono);font-size:22px;color:var(--green);transition:color 0.15s;font-weight:600}
 .tb-price.up{color:#00ff99}.tb-price.dn{color:#ff6080}
 .tb-chg{font-size:11px;font-family:var(--mono);margin-top:1px}
@@ -74,8 +74,8 @@ canvas#cc{display:block;width:100%}
         <span class="tb-badge-vo">VIEW ONLY</span>
       </div>
       <div class="tb-stats">
-        <div class="tb-stat"><div class="tb-slbl">HIGH</div><div class="tb-sval" id="tb-hi">$10.48</div></div>
-        <div class="tb-stat"><div class="tb-slbl">LOW</div><div class="tb-sval" id="tb-lo">$9.80</div></div>
+        <div class="tb-stat"><div class="tb-slbl">HIGH</div><div class="tb-sval" id="tb-hi">—</div></div>
+        <div class="tb-stat"><div class="tb-slbl">LOW</div><div class="tb-sval" id="tb-lo">—</div></div>
         <div class="tb-stat"><div class="tb-slbl">VOL</div><div class="tb-sval">3.12M</div></div>
       </div>
     </div>
@@ -93,8 +93,8 @@ canvas#cc{display:block;width:100%}
   </div>
 
   <div class="stats-row">
-    <div class="stat-cell"><div class="sc-lbl">PRICE</div><div class="sc-val" id="st-p">$10.02</div></div>
-    <div class="stat-cell"><div class="sc-lbl">24H CHG</div><div class="sc-val" id="st-c" style="color:var(--red)">-9.07%</div></div>
+    <div class="stat-cell"><div class="sc-lbl">PRICE</div><div class="sc-val" id="st-p">—</div></div>
+    <div class="stat-cell"><div class="sc-lbl">24H CHG</div><div class="sc-val" id="st-c">—</div></div>
     <div class="stat-cell"><div class="sc-lbl">MKT CAP</div><div class="sc-val">$2.31B</div></div>
   </div>
 
@@ -103,8 +103,8 @@ canvas#cc{display:block;width:100%}
       <div class="bc-lbl">PORTFOLIO VALUE</div>
       <div class="bc-crypto">207 ONDO 2</div>
     </div>
-    <div class="bc-total" id="b-usd">$2,074.14</div>
-    <div class="bc-sub" id="b-sub">@ $10.02 per ONDO 2</div>
+    <div class="bc-total" id="b-usd">—</div>
+    <div class="bc-sub" id="b-sub">calculating...</div>
   </div>
 
   <div class="serial-card">
@@ -115,12 +115,12 @@ canvas#cc{display:block;width:100%}
     <div class="sc2-div"></div>
     <div class="sc2-blk" style="align-items:flex-end">
       <div class="sc2-lbl">CURRENT SERIAL</div>
-      <div class="sc2-cur" id="cur-serial">265</div>
+      <div class="sc2-cur" id="cur-serial">—</div>
     </div>
   </div>
 
   <div class="ob-card">
-    <div class="ob-hdr"><span>ORDER BOOK</span><span style="color:var(--green)" id="ob-m">$10.0200</span></div>
+    <div class="ob-hdr"><span>ORDER BOOK</span><span style="color:var(--green)" id="ob-m">—</span></div>
     <div class="ob-cols">
       <div class="ob-col">
         <div class="ob-col-hdr"><span>SELL</span><span>SIZE</span></div>
@@ -135,12 +135,12 @@ canvas#cc{display:block;width:100%}
 </div>
 
 <script>
-const HOLDINGS   = 207;
-const START_PRICE= 10.02;
-const DAILY_DROP = 1.00;
-const DAY_ZERO   = new Date('2026-06-08T00:00:00Z');
+const HOLDINGS    = 207;
+const START_PRICE = 8.412;
+const DAILY_DROP  = 1.00;
+const DAY_ZERO    = new Date('2026-06-08T00:00:00Z');
 
-// ── Seeded PRNG (mulberry32) — same seed = same candles every refresh ──
+// ── Seeded PRNG (mulberry32) ──
 function makePRNG(seed) {
   let s = seed >>> 0;
   return function() {
@@ -150,85 +150,104 @@ function makePRNG(seed) {
     return ((t ^ t >>> 14) >>> 0) / 4294967296;
   };
 }
-
 function tfHash(tf) {
   let h = 0;
   for (let i = 0; i < tf.length; i++) h = (Math.imul(31, h) + tf.charCodeAt(i)) | 0;
   return h;
 }
 
+// ── Time-based helpers ──
 function getDayNum() {
-  return Math.max(0, Math.floor((Date.now() - DAY_ZERO) / 86400000));
+  return Math.max(0, Math.floor((Date.now() - DAY_ZERO.getTime()) / 86400000));
 }
 function getDayPrice(d) {
   return Math.max(0.01, START_PRICE - d * DAILY_DROP);
 }
 
-const dayNum       = getDayNum();
-const dayBasePrice = getDayPrice(dayNum);
+// ── Deterministic live price using wall clock seconds ──
+// Even if tab is closed, re-opening calculates the CORRECT current price
+function computeLivePrice(dayBase) {
+  const nowSec = Math.floor(Date.now() / 1000);
+  const rng = makePRNG((nowSec * 2654435761) >>> 0);
+  const micro = (rng() - 0.5) * 0.06;
+  return Math.max(0.01, dayBase + micro);
+}
 
-// Current serial: today is day 0 → 265, each day +89
-document.getElementById('cur-serial').textContent = 265 + dayNum * 89;
-
-let livePrice = dayBasePrice, prevPrice = dayBasePrice, currentTF = '1h';
-
-const candleData = [];
 const tfSecs  = {'15m':900,'1h':3600,'4h':14400,'1d':86400};
 const tfCount = {'15m':60,'1h':48,'4h':36,'1d':24};
 
-function seedCandles(tf) {
-  candleData.length = 0;
-  // Seed depends only on day + tf → same result every refresh
-  const seed = (dayNum * 1000 + Math.abs(tfHash(tf))) >>> 0;
-  const rng  = makePRNG(seed);
+let currentTF = '1h';
+let candleData = [];
 
+// ── Build ALL candles from wall-clock time deterministically ──
+// Same input (day + tf + current time) → same candles, always
+function seedCandles(tf) {
+  candleData = [];
+  const dayNum = getDayNum();
+  const dayBase = getDayPrice(dayNum);
   const s   = tfSecs[tf];
   const cnt = tfCount[tf];
+
+  const baseSeed = (dayNum * 1000 + Math.abs(tfHash(tf))) >>> 0;
+  const rng = makePRNG(baseSeed);
+
   const dps = DAILY_DROP / (86400 / s);
-  let p = dayBasePrice + cnt * dps * 1.1;
+  let p = dayBase + cnt * dps * 1.1;
 
   const now     = Math.floor(Date.now() / 1000);
   const slotNow = Math.floor(now / s) * s;
 
   for (let i = 0; i < cnt; i++) {
-    const t    = slotNow - (cnt - i) * s;
-    const dir  = rng() > 0.45 ? -1 : 1;
-    const body = rng() * 0.1 * (s / 3600);
+    const slotT = slotNow - (cnt - i) * s;
+    const dir   = rng() > 0.45 ? -1 : 1;
+    const body  = rng() * 0.1 * (s / 3600);
     const o = p;
     const c = Math.max(0.01, o + dir * body);
     const h = Math.max(o, c) + rng() * 0.04 * (s / 3600);
     const l = Math.min(o, c) - rng() * 0.04 * (s / 3600);
-    candleData.push({t, o, h, l, c});
+
+    // For slots already elapsed: use seeded candle
+    // For current slot: will be patched below
+    candleData.push({t: slotT, o, h, l, c, sealed: slotT < slotNow});
     p = c - dps * (0.8 + rng() * 0.4);
     if (p < 0.01) p = 0.01;
   }
 
+  // Patch last candle to reflect current live price
   if (candleData.length) {
     const last = candleData[candleData.length - 1];
-    last.c = dayBasePrice;
-    last.h = Math.max(last.o, last.c) + 0.02;
-    last.l = Math.min(last.o, last.c) - 0.02;
+    const lp = computeLivePrice(dayBase);
+    last.c = lp;
+    last.h = Math.max(last.o, lp) + 0.015;
+    last.l = Math.min(last.o, lp) - 0.015;
   }
 }
 
-function updateLastCandle(price) {
+// ── Advance candles: add new slot when time moves forward ──
+function advanceCandles(livePrice) {
   if (!candleData.length) return;
+  const s = tfSecs[currentTF];
+  const now = Math.floor(Date.now() / 1000);
   const last = candleData[candleData.length - 1];
-  const now  = Math.floor(Date.now() / 1000);
-  if (now - last.t >= tfSecs[currentTF]) {
-    candleData.push({t: now, o: last.c, h: price, l: price, c: price});
+  const currentSlot = Math.floor(now / s) * s;
+
+  if (currentSlot > last.t) {
+    // New slot opened — seal last, open new
+    last.sealed = true;
+    candleData.push({t: currentSlot, o: last.c, h: livePrice, l: livePrice, c: livePrice, sealed: false});
     if (candleData.length > 80) candleData.shift();
   } else {
-    last.c = price;
-    if (price > last.h) last.h = price;
-    if (price < last.l) last.l = price;
+    // Update current live candle
+    last.c = livePrice;
+    if (livePrice > last.h) last.h = livePrice;
+    if (livePrice < last.l) last.l = livePrice;
   }
 }
 
-function drawChart() {
+function drawChart(livePrice) {
   const canvas = document.getElementById('cc');
   const cw     = document.getElementById('cw');
-  const W = cw.offsetWidth;
+  const W = cw.offsetWidth || 360;
   const H = Math.round(W * 0.58);
   canvas.width = W; canvas.height = H; canvas.style.height = H + 'px';
   const ctx = canvas.getContext('2d');
@@ -239,7 +258,7 @@ function drawChart() {
   const cW2 = W-pL-pR, cH2 = H-pT-pB;
   const prices = candleData.flatMap(c => [c.h, c.l]);
   let minP = Math.min(...prices), maxP = Math.max(...prices);
-  const rng = maxP - minP, pad = rng * 0.1;
+  const rng2 = maxP - minP, pad = rng2 * 0.1;
   minP -= pad; maxP += pad;
   const pRng = maxP - minP;
   const toY  = p => pT + (1 - (p - minP) / pRng) * cH2;
@@ -288,24 +307,47 @@ function drawChart() {
     ctx.strokeRect(x-bW/2, bodyT, bW, bH);
   });
 
-  const ly = toY(livePrice);
-  ctx.setLineDash([3,4]); ctx.strokeStyle = 'rgba(0,230,118,0.5)'; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(pL,ly); ctx.lineTo(pL+cW2,ly); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle = '#00e676';
-  ctx.fillRect(pL+cW2+1, ly-8, pR-3, 16);
-  ctx.fillStyle = '#050f09'; ctx.font = 'bold 9px Share Tech Mono,monospace'; ctx.textAlign = 'center';
-  ctx.fillText('$'+livePrice.toFixed(2), pL+cW2+1+(pR-3)/2, ly+3);
+  if (livePrice) {
+    const ly = toY(livePrice);
+    ctx.setLineDash([3,4]); ctx.strokeStyle = 'rgba(0,230,118,0.5)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pL,ly); ctx.lineTo(pL+cW2,ly); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#00e676';
+    ctx.fillRect(pL+cW2+1, ly-8, pR-3, 16);
+    ctx.fillStyle = '#050f09'; ctx.font = 'bold 9px Share Tech Mono,monospace'; ctx.textAlign = 'center';
+    ctx.fillText('$'+livePrice.toFixed(2), pL+cW2+1+(pR-3)/2, ly+3);
+  }
 }
 
-function updateUI() {
+function updateOB(mid) {
+  const rowsS=[], rowsB=[];
+  const obSeed = Math.floor(Date.now() / 3000);
+  const rng = makePRNG((obSeed * 1234567) >>> 0);
+  for (let i=6; i>=1; i--) {
+    const off = i*(0.003+rng()*0.005);
+    const sz  = Math.floor(rng()*8000+500);
+    rowsS.push({p:(mid+off).toFixed(3), sz:sz.toLocaleString(), w:Math.round(sz/8500*100)});
+  }
+  for (let i=1; i<=6; i++) {
+    const off = i*(0.003+rng()*0.005);
+    const sz  = Math.floor(rng()*8000+500);
+    rowsB.push({p:(mid-off).toFixed(3), sz:sz.toLocaleString(), w:Math.round(sz/8500*100)});
+  }
+  document.getElementById('ob-s').innerHTML = rowsS.map(r=>`<div class="ob-r s"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
+  document.getElementById('ob-b').innerHTML = rowsB.map(r=>`<div class="ob-r b"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
+}
+
+function updateUI(livePrice, prevPrice) {
+  const dayNum = getDayNum();
   const p = livePrice, fmt = p.toFixed(2);
   const isUp = p >= prevPrice;
+
   const tb = document.getElementById('tb-p');
   tb.textContent = '$'+fmt;
   tb.className = 'tb-price '+(isUp?'up':'dn');
   setTimeout(() => tb.className = 'tb-price', 200);
   document.getElementById('st-p').textContent = '$'+fmt;
+
   const yestPrice = getDayPrice(Math.max(0, dayNum-1));
   const chg = p - yestPrice, pct = (chg/yestPrice*100).toFixed(2);
   document.getElementById('tb-chg').textContent = (chg>=0?'▲ +':'▼ ')+'$'+Math.abs(chg).toFixed(2)+' ('+pct+'%)';
@@ -314,6 +356,7 @@ function updateUI() {
   document.getElementById('st-c').style.color  = chg>=0?'#00e676':'#ff3d57';
   document.getElementById('tb-hi').textContent = '$'+(p+0.45).toFixed(2);
   document.getElementById('tb-lo').textContent = '$'+Math.max(0.01,p-0.22).toFixed(2);
+
   const total = HOLDINGS * p;
   const balEl = document.getElementById('b-usd');
   balEl.textContent = '$'+total.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -322,23 +365,11 @@ function updateUI() {
   document.getElementById('b-sub').textContent = '@ $'+fmt+' per ONDO 2';
   document.getElementById('ob-m').textContent  = '$'+p.toFixed(4);
   document.getElementById('ob-m').style.color  = isUp?'#00e676':'#ff3d57';
-  updateOB(p);
-}
 
-function updateOB(mid) {
-  const rowsS=[], rowsB=[];
-  for (let i=6; i>=1; i--) {
-    const off = i*(0.003+Math.random()*0.005);
-    const sz  = (Math.random()*8000+500).toFixed(0);
-    rowsS.push({p:(mid+off).toFixed(3), sz:Number(sz).toLocaleString(), w:(+sz/8500*100).toFixed(0)});
-  }
-  for (let i=1; i<=6; i++) {
-    const off = i*(0.003+Math.random()*0.005);
-    const sz  = (Math.random()*8000+500).toFixed(0);
-    rowsB.push({p:(mid-off).toFixed(3), sz:Number(sz).toLocaleString(), w:(+sz/8500*100).toFixed(0)});
-  }
-  document.getElementById('ob-s').innerHTML = rowsS.map(r=>`<div class="ob-r s"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
-  document.getElementById('ob-b').innerHTML = rowsB.map(r=>`<div class="ob-r b"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
+  // Serial: day 0 → 315, each day +89
+  document.getElementById('cur-serial').textContent = 315 + dayNum * 89;
+
+  updateOB(p);
 }
 
 window.switchTF = function(tf, btn) {
@@ -346,20 +377,34 @@ window.switchTF = function(tf, btn) {
   document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
   seedCandles(tf);
-  drawChart();
+  const dayBase = getDayPrice(getDayNum());
+  const lp = computeLivePrice(dayBase);
+  drawChart(lp);
 };
 
+// ── Main loop ──
+let prevPrice = null;
+
 function tick() {
-  prevPrice = livePrice;
-  livePrice = Math.max(0.01, dayBasePrice + (Math.random()-0.5)*0.04);
-  updateLastCandle(livePrice);
-  updateUI();
-  drawChart();
+  const dayNum  = getDayNum();
+  const dayBase = getDayPrice(dayNum);
+  const lp      = computeLivePrice(dayBase);
+
+  if (prevPrice === null) prevPrice = lp;
+
+  advanceCandles(lp);
+  updateUI(lp, prevPrice);
+  drawChart(lp);
+
+  prevPrice = lp;
 }
 
+// Init
 seedCandles('1h');
-updateUI();
-drawChart();
+tick();
 setInterval(tick, 1000);
-window.addEventListener('resize', drawChart);
+window.addEventListener('resize', () => {
+  const dayBase = getDayPrice(getDayNum());
+  drawChart(computeLivePrice(dayBase));
+});
 </script>
