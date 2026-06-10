@@ -136,7 +136,7 @@ canvas#cc{display:block;width:100%}
 
 <script>
 const HOLDINGS    = 207;
-const START_PRICE = 8.412;
+const START_PRICE = 5.412;
 const DAILY_DROP  = 1.00;
 const DAY_ZERO    = new Date('2026-06-08T00:00:00Z');
 
@@ -367,7 +367,7 @@ function updateUI(livePrice, prevPrice) {
   document.getElementById('ob-m').style.color  = isUp?'#00e676':'#ff3d57';
 
   // Serial: day 0 → 315, each day +89
-  document.getElementById('cur-serial').textContent = 357 + dayNum * 89;
+  document.getElementById('cur-serial').textContent = 437 + dayNum * 89;
 
   updateOB(p);
 }
