@@ -1,4 +1,3 @@
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -38,6 +37,7 @@ canvas#cc{display:block;width:100%}
 .bc-crypto{font-family:var(--mono);font-size:13px;color:var(--text2)}
 .bc-total{font-family:var(--mono);font-size:30px;color:var(--green);font-weight:600;transition:color 0.3s}
 .bc-total.pulse{color:#00ff99}
+.bc-total.crash{color:var(--red)!important}
 .bc-sub{font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:2px}
 .serial-card{background:var(--bg2);margin:0 12px 10px;border-radius:6px;border:1px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
 .sc2-blk{display:flex;flex-direction:column;gap:3px}
@@ -56,81 +56,128 @@ canvas#cc{display:block;width:100%}
 .ob-r.s .bg{background:var(--red)}.ob-r.b .bg{background:var(--green)}
 .ob-r.s .p{color:var(--red)}.ob-r.b .p{color:var(--green)}
 .ob-r .sz{color:var(--text3);font-size:9px}
+.news-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;padding:10px 14px;background:#1a0005;border-bottom:2px solid var(--red);animation:slideDown 0.4s ease}
+.news-banner.show{display:flex;align-items:center;gap:10px}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+.nb-icon{font-size:18px;flex-shrink:0}
+.nb-text{flex:1}
+.nb-title{font-family:var(--mono);font-size:11px;color:var(--red);font-weight:700;letter-spacing:1px}
+.nb-body{font-size:10px;color:var(--text2);margin-top:2px;font-family:var(--ui)}
+.nb-close{font-family:var(--mono);font-size:11px;color:var(--text3);cursor:pointer;padding:2px 6px;border:1px solid var(--border2);border-radius:2px}
+.countdown-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 14px;display:flex;align-items:center;justify-content:space-between}
+.cd-label{font-size:9px;color:var(--text3);font-family:var(--mono);letter-spacing:1px}
+.cd-timer{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:2px}
+.cd-desc{font-size:9px;color:var(--red);font-family:var(--mono)}
+.cd-timer.urgent{color:var(--red);animation:blink 0.5s step-end infinite}
+@keyframes blink{50%{opacity:0}}
 </style>
 
-<div class="app">
-  <div class="topbar">
-    <div class="tb-left">
-      <div class="tb-pair">ONDO 2 / USDT</div>
-      <div class="tb-price" id="tb-p">—</div>
-      <div class="tb-chg" id="tb-chg">—</div>
-    </div>
-    <div class="tb-right">
-      <div style="display:flex;gap:6px">
-        <span class="tb-badge-live">● LIVE</span>
-        <span class="tb-badge-vo">VIEW ONLY</span>
+<div class="news-banner" id="news-banner">
+    <div class="nb-icon">🚨</div>
+    <div class="nb-text">
+        <div class="nb-title">⚡ BREAKING NEWS — MARKET ALERT</div>
+        <div class="nb-body" id="nb-body">Major sell-off triggered. ONDO 2 price collapsed to $0.06</div>
       </div>
-      <div class="tb-stats">
-        <div class="tb-stat"><div class="tb-slbl">HIGH</div><div class="tb-sval" id="tb-hi">—</div></div>
-        <div class="tb-stat"><div class="tb-slbl">LOW</div><div class="tb-sval" id="tb-lo">—</div></div>
-        <div class="tb-stat"><div class="tb-slbl">VOL</div><div class="tb-sval">3.12M</div></div>
+    <div class="nb-close" onclick="document.getElementById('news-banner').classList.remove('show')">✕</div>
+</div>
+
+<div class="app" id="main-app">
+    <div class="topbar">
+        <div class="tb-left">
+            <div class="tb-pair">ONDO 2 / USDT</div>
+            <div class="tb-price" id="tb-p">—</div>
+            <div class="tb-chg" id="tb-chg">—</div>
+          </div>
+        <div class="tb-right">
+            <div style="display:flex;gap:6px">
+                <span class="tb-badge-live">● LIVE</span>
+                <span class="tb-badge-vo">VIEW ONLY</span>
+              </div>
+            <div class="tb-stats">
+                <div class="tb-stat"><div class="tb-slbl">HIGH</div><div class="tb-sval" id="tb-hi">—</div></div>
+                <div class="tb-stat"><div class="tb-slbl">LOW</div><div class="tb-sval" id="tb-lo">—</div></div>
+                <div class="tb-stat"><div class="tb-slbl">VOL</div><div class="tb-sval">3.12M</div></div>
+              </div>
+          </div>
       </div>
-    </div>
-  </div>
 
-  <div class="chart-wrap" id="cw">
-    <canvas id="cc"></canvas>
-  </div>
-
-  <div class="stats-row">
-    <div class="stat-cell"><div class="sc-lbl">PRICE</div><div class="sc-val" id="st-p">—</div></div>
-    <div class="stat-cell"><div class="sc-lbl">CHG</div><div class="sc-val" id="st-c">—</div></div>
-    <div class="stat-cell"><div class="sc-lbl">1M TF</div><div class="sc-val" style="color:var(--blue)">● LIVE</div></div>
-  </div>
-
-  <div class="balance-card">
-    <div class="bc-row">
-      <div class="bc-lbl">PORTFOLIO VALUE</div>
-      <div class="bc-crypto">207 ONDO 2</div>
-    </div>
-    <div class="bc-total" id="b-usd">—</div>
-    <div class="bc-sub" id="b-sub">calculating...</div>
-  </div>
-
-  <div class="serial-card">
-    <div class="sc2-blk">
-      <div class="sc2-lbl">YOUR SERIAL NUMBER</div>
-      <div class="sc2-num">2114</div>
-    </div>
-    <div class="sc2-div"></div>
-    <div class="sc2-blk" style="align-items:flex-end">
-      <div class="sc2-lbl">CURRENT SERIAL</div>
-      <div class="sc2-cur" id="cur-serial">—</div>
-    </div>
-  </div>
-
-  <div class="ob-card">
-    <div class="ob-hdr"><span>ORDER BOOK</span><span style="color:var(--green)" id="ob-m">—</span></div>
-    <div class="ob-cols">
-      <div class="ob-col">
-        <div class="ob-col-hdr"><span>SELL</span><span>SIZE</span></div>
-        <div id="ob-s"></div>
+    <div class="countdown-bar">
+        <div>
+            
+          </div>
+        
       </div>
-      <div class="ob-col">
-        <div class="ob-col-hdr"><span>BUY</span><span>SIZE</span></div>
-        <div id="ob-b"></div>
+
+    <div class="chart-wrap" id="cw">
+        <canvas id="cc"></canvas>
       </div>
-    </div>
-  </div>
+
+    <div class="stats-row">
+        <div class="stat-cell"><div class="sc-lbl">PRICE</div><div class="sc-val" id="st-p">—</div></div>
+        <div class="stat-cell"><div class="sc-lbl">CHG</div><div class="sc-val" id="st-c">—</div></div>
+        <div class="stat-cell"><div class="sc-lbl">1M TF</div><div class="sc-val" style="color:var(--blue)">● LIVE</div></div>
+      </div>
+
+    <div class="balance-card">
+        <div class="bc-row">
+            <div class="bc-lbl">PORTFOLIO VALUE</div>
+            <div class="bc-crypto">207 ONDO 2</div>
+          </div>
+        <div class="bc-total" id="b-usd">—</div>
+        <div class="bc-sub" id="b-sub">calculating...</div>
+      </div>
+
+    <div class="serial-card">
+        <div class="sc2-blk">
+            <div class="sc2-lbl">YOUR SERIAL NUMBER</div>
+            <div class="sc2-num">1114</div>
+          </div>
+        <div class="sc2-div"></div>
+        <div class="sc2-blk" style="align-items:flex-end">
+            <div class="sc2-lbl">CURRENT SERIAL</div>
+            <div class="sc2-cur" id="cur-serial">—</div>
+          </div>
+      </div>
+
+    <div class="ob-card">
+        <div class="ob-hdr"><span>ORDER BOOK</span><span style="color:var(--green)" id="ob-m">—</span></div>
+        <div class="ob-cols">
+            <div class="ob-col">
+                <div class="ob-col-hdr"><span>SELL</span><span>SIZE</span></div>
+                <div id="ob-s"></div>
+              </div>
+            <div class="ob-col">
+                <div class="ob-col-hdr"><span>BUY</span><span>SIZE</span></div>
+                <div id="ob-b"></div>
+              </div>
+          </div>
+      </div>
 </div>
 
 <script>
 const HOLDINGS    = 207;
-const START_PRICE = 18.412;   // original price on DAY_ZERO
+const START_PRICE = 18.412;
 const DAILY_DROP  = 1.00;
 const DAY_ZERO    = new Date('2026-06-08T00:00:00Z');
+const NEWS_PRICE  = 0.06;
+const CRASH_SECS  = 30;
 
-// ── Seeded PRNG (mulberry32) ──────────────────────────────────
+// ── News time: Tonight at 10:50:00 PM (Fixed Date & Time) ────────────────────────
+function getNewsTime() {
+  return new Date(2026, 5, 10, 22, 50, 0, 0); // Month is 0-indexed (5 = June), 22:50 = 10:50 PM
+}
+
+let newsTriggered = false, crashStarted = false;
+let crashProgress = 0, crashFrom = 0, crashInterval = null;
+
+// Persistent crash detection via localStorage to avoid re-triggering or rolling back on page refresh
+const hasCrashedBefore = localStorage.getItem('ondo2_crashed_20260610');
+if (hasCrashedBefore) {
+  newsTriggered = true;
+  crashStarted = true;
+  crashProgress = 1;
+}
+
 function makePRNG(seed) {
   let s = seed >>> 0;
   return function() {
@@ -141,7 +188,6 @@ function makePRNG(seed) {
   };
 }
 
-// ── Day helpers ───────────────────────────────────────────────
 function getDayNum() {
   return Math.max(0, Math.floor((Date.now() - DAY_ZERO.getTime()) / 86400000));
 }
@@ -149,264 +195,221 @@ function getDayPrice(d) {
   return Math.max(0.01, START_PRICE - d * DAILY_DROP);
 }
 
-// ── 1-minute candle store ─────────────────────────────────────
-// We keep 60 sealed 1-min candles + 1 live candle = 61 total
-// Each sealed candle is seeded by (minuteTimestamp) so it's
-// identical across refreshes
-const SLOT = 60;        // seconds per candle = 1 minute
-const HISTORY = 60;     // how many past candles to show
-
-function getMinuteSlot(unixSec) {
-  return Math.floor(unixSec / SLOT) * SLOT;
-}
-
-// Build a deterministic candle for a given minute slot
-// Price drifts gently around the day's base; buyer pump baked in
-function buildSealedCandle(slotT, dayBase) {
-  const rng = makePRNG((slotT ^ 0xDEADBEEF) >>> 0);
-
-  // How many minutes ago is this slot?
-  const nowSec = Math.floor(Date.now() / 1000);
-  const minsAgo = (nowSec - slotT) / 60;
-
-  // Base price for this slot: add a pump curve
-  // Price was ~3 lower in the past, rises toward dayBase
-  const pumpProgress = Math.max(0, Math.min(1, 1 - minsAgo / HISTORY));
-  const dip = 3.0 * (1 - pumpProgress);   // 3 dollars lower at the start
-  const slotBase = Math.max(0.01, dayBase - dip + (rng() - 0.5) * 0.15);
-
-  const dir  = rng() > 0.42 ? 1 : -1;    // slight upward bias (buyer news)
-  const body = rng() * 0.08;
-  const o = slotBase;
-  const c = Math.max(0.01, o + dir * body);
-  const h = Math.max(o, c) + rng() * 0.04;
-  const l = Math.min(o, c) - rng() * 0.03;
-  return {t: slotT, o, h, l, c, sealed: true};
-}
-
-let candleData = [];
-
-function seedCandles() {
-  candleData = [];
-  const dayNum  = getDayNum();
-  const dayBase = getDayPrice(dayNum);
-  const nowSec  = Math.floor(Date.now() / 1000);
-  const curSlot = getMinuteSlot(nowSec);
-
-  // Build HISTORY past candles (all sealed, deterministic)
-  for (let i = HISTORY; i >= 1; i--) {
-    const slotT = curSlot - i * SLOT;
-    candleData.push(buildSealedCandle(slotT, dayBase));
-  }
-
-  // Add current live candle (open = last sealed close)
-  const lastClose = candleData.length ? candleData[candleData.length-1].c : dayBase;
-  candleData.push({t: curSlot, o: lastClose, h: lastClose, l: lastClose, c: lastClose, sealed: false});
-}
-
-// ── Compute live price (deterministic per second) ─────────────
 function computeLivePrice(dayBase) {
+  if (crashStarted) {
+    if (hasCrashedBefore) return NEWS_PRICE;
+    return Math.max(NEWS_PRICE, crashFrom + (NEWS_PRICE - crashFrom) * Math.min(1, crashProgress));
+  }
   const nowSec = Math.floor(Date.now() / 1000);
   const rng = makePRNG((nowSec * 2654435761) >>> 0);
   return Math.max(0.01, dayBase + (rng() - 0.5) * 0.06);
 }
 
-// ── Advance: seal finished candle, open new one ───────────────
-function advanceCandles(livePrice, dayBase) {
-  if (!candleData.length) return;
-  const nowSec  = Math.floor(Date.now() / 1000);
-  const curSlot = getMinuteSlot(nowSec);
-  const last    = candleData[candleData.length - 1];
+const SLOT = 60, HISTORY = 60;
+let candleData = [];
 
+function getMinuteSlot(s) { return Math.floor(s / SLOT) * SLOT; }
+
+function buildSealedCandle(slotT, dayBase) {
+  const rng = makePRNG((slotT ^ 0xDEADBEEF) >>> 0);
+  const nowSec = Math.floor(Date.now() / 1000);
+  const minsAgo = (nowSec - slotT) / 60;
+  const pumpProgress = Math.max(0, Math.min(1, 1 - minsAgo / HISTORY));
+  const dip = 3.0 * (1 - pumpProgress);
+  const slotBase = Math.max(0.01, dayBase - dip + (rng() - 0.5) * 0.15);
+  const dir = rng() > 0.42 ? 1 : -1, body = rng() * 0.08;
+  const o = slotBase, c = Math.max(0.01, o + dir * body);
+  const h = Math.max(o, c) + rng() * 0.04, l = Math.min(o, c) - rng() * 0.03;
+  return {t: slotT, o, h, l, c, sealed: true};
+}
+
+function seedCandles() {
+  candleData = [];
+  const dayBase = getDayPrice(getDayNum());
+  const nowSec = Math.floor(Date.now() / 1000);
+  const curSlot = getMinuteSlot(nowSec);
+  for (let i = HISTORY; i >= 1; i--)
+    candleData.push(buildSealedCandle(curSlot - i * SLOT, dayBase));
+  const lastClose = candleData.length ? candleData[candleData.length-1].c : dayBase;
+  candleData.push({t: curSlot, o: lastClose, h: lastClose, l: lastClose, c: lastClose, sealed: false});
+}
+
+function advanceCandles(lp) {
+  if (!candleData.length) return;
+  const nowSec = Math.floor(Date.now() / 1000);
+  const curSlot = getMinuteSlot(nowSec);
+  const last = candleData[candleData.length - 1];
   if (curSlot > last.t) {
-    // Seal current candle
     last.sealed = true;
-    // Open new live candle
-    candleData.push({t: curSlot, o: last.c, h: livePrice, l: livePrice, c: livePrice, sealed: false});
+    candleData.push({t: curSlot, o: last.c, h: lp, l: lp, c: lp, sealed: false});
     if (candleData.length > HISTORY + 2) candleData.shift();
   } else {
-    // Update live candle
-    last.c = livePrice;
-    if (livePrice > last.h) last.h = livePrice;
-    if (livePrice < last.l) last.l = livePrice;
+    last.c = lp;
+    if (lp > last.h) last.h = lp;
+    if (lp < last.l) last.l = lp;
   }
 }
 
-// ── Draw chart ────────────────────────────────────────────────
-function drawChart(livePrice) {
+function drawChart(lp) {
   const canvas = document.getElementById('cc');
-  const cw     = document.getElementById('cw');
-  const W = cw.offsetWidth || 360;
-  const H = Math.round(W * 0.62);
+  const cw = document.getElementById('cw');
+  const W = cw.offsetWidth || 360, H = Math.round(W * 0.62);
   canvas.width = W; canvas.height = H; canvas.style.height = H + 'px';
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, W, H);
   if (candleData.length < 2) return;
-
   const pL=50, pR=56, pT=14, pB=28;
-  const cW2 = W-pL-pR, cH2 = H-pT-pB;
-
-  // Price range — include ALL candles so y-axis shows full history
-  const prices = candleData.flatMap(c => [c.h, c.l]);
-  let minP = Math.min(...prices), maxP = Math.max(...prices);
-  const rng2 = maxP - minP;
-  const pad  = rng2 * 0.08;
-  minP -= pad; maxP += pad;
-  const pRng = maxP - minP;
-  const toY  = p => pT + (1 - (p - minP) / pRng) * cH2;
-
-  const n     = candleData.length;
-  const slotW = cW2 / n;
-  const bW    = Math.max(1.5, slotW * 0.72);
-
-  // ── Grid lines ──
-  ctx.lineWidth = 0.5;
-  for (let i = 0; i <= 5; i++) {
-    const y  = pT + (cH2 / 5) * i;
-    const pv = maxP - (pRng / 5) * i;
-    ctx.strokeStyle = '#151e2a';
-    ctx.beginPath(); ctx.moveTo(pL, y); ctx.lineTo(pL+cW2, y); ctx.stroke();
-    ctx.fillStyle = '#3a5570'; ctx.font = '9px Share Tech Mono,monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText('$'+pv.toFixed(2), pL-3, y+3);
+  const cW2=W-pL-pR, cH2=H-pT-pB;
+  const prices = candleData.flatMap(c=>[c.h,c.l]);
+  let minP=Math.min(...prices,lp), maxP=Math.max(...prices,lp);
+  const pad=(maxP-minP)*0.08; minP-=pad; maxP+=pad;
+  const pRng=maxP-minP, toY=p=>pT+(1-(p-minP)/pRng)*cH2;
+  const n=candleData.length, slotW=cW2/n, bW=Math.max(1.5,slotW*0.72);
+  ctx.lineWidth=0.5;
+  for (let i=0;i<=5;i++) {
+    const y=pT+(cH2/5)*i, pv=maxP-(pRng/5)*i;
+    ctx.strokeStyle='#151e2a'; ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(pL+cW2,y); ctx.stroke();
+    ctx.fillStyle='#3a5570'; ctx.font='9px Share Tech Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText('$'+pv.toFixed(2),pL-3,y+3);
   }
-
-  // ── Time labels ──
-  const step = Math.max(1, Math.floor(n / 5));
-  for (let i = 0; i < n; i += step) {
-    const x = pL + i*slotW + slotW/2;
-    const d = new Date(candleData[i].t * 1000);
-    const lbl = d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
-    ctx.fillStyle = '#3a5570'; ctx.font = '8px Share Tech Mono,monospace';
-    ctx.textAlign = 'center'; ctx.fillText(lbl, x, pT+cH2+16);
+  const step=Math.max(1,Math.floor(n/5));
+  for (let i=0;i<n;i+=step) {
+    const x=pL+i*slotW+slotW/2, d=new Date(candleData[i].t*1000);
+    const lbl=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+    ctx.fillStyle='#3a5570'; ctx.font='8px Share Tech Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(lbl,x,pT+cH2+16);
   }
-
-  // ── MA7 ──
-  if (n >= 7) {
-    const ma7 = [];
-    for (let i = 6; i < n; i++)
-      ma7.push({x: pL+(i+0.5)*slotW, y: toY(candleData.slice(i-6,i+1).reduce((s,c)=>s+c.c,0)/7)});
-    ctx.strokeStyle = 'rgba(255,214,0,0.45)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ma7.forEach((p,i) => i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y)); ctx.stroke();
+  if (n>=7) {
+    const ma7=[];
+    for (let i=6;i<n;i++) ma7.push({x:pL+(i+0.5)*slotW,y:toY(candleData.slice(i-6,i+1).reduce((s,c)=>s+c.c,0)/7)});
+    ctx.strokeStyle='rgba(255,214,0,0.45)'; ctx.lineWidth=1;
+    ctx.beginPath(); ma7.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)); ctx.stroke();
   }
-
-  // ── Candles ──
-  candleData.forEach((c, i) => {
-    const x    = pL + i*slotW + slotW/2;
-    const isUp = c.c >= c.o;
-    const col  = isUp ? '#00e676' : '#ff3d57';
-    const bodyT = toY(Math.max(c.o, c.c));
-    const bodyB = toY(Math.min(c.o, c.c));
-    const bH    = Math.max(1, bodyB - bodyT);
-
-    // Wick
-    ctx.strokeStyle = col; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x, toY(c.h)); ctx.lineTo(x, toY(c.l)); ctx.stroke();
-
-    // Body — live candle slightly brighter
-    if (!c.sealed) {
-      ctx.fillStyle = isUp ? '#00ff99' : '#ff6080';
-      ctx.strokeStyle = isUp ? '#00ff99' : '#ff6080';
-    } else {
-      ctx.fillStyle = isUp ? '#00e676' : 'rgba(255,61,87,0.18)';
-      ctx.strokeStyle = col;
-    }
-    ctx.fillRect(x-bW/2, bodyT, bW, bH);
-    ctx.strokeRect(x-bW/2, bodyT, bW, bH);
+  candleData.forEach((c,i)=>{
+    const x=pL+i*slotW+slotW/2, isUp=c.c>=c.o, col=isUp?'#00e676':'#ff3d57';
+    const bodyT=toY(Math.max(c.o,c.c)), bodyB=toY(Math.min(c.o,c.c)), bH=Math.max(1,bodyB-bodyT);
+    ctx.strokeStyle=col; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,toY(c.h)); ctx.lineTo(x,toY(c.l)); ctx.stroke();
+    ctx.fillStyle=!c.sealed?(isUp?'#00ff99':'#ff6080'):(isUp?'#00e676':'rgba(255,61,87,0.18)');
+    ctx.strokeStyle=!c.sealed?(isUp?'#00ff99':'#ff6080'):col;
+    ctx.fillRect(x-bW/2,bodyT,bW,bH); ctx.strokeRect(x-bW/2,bodyT,bW,bH);
   });
-
-  // ── Live price dashed line + label ──
-  if (livePrice) {
-    const ly = toY(livePrice);
-    ctx.setLineDash([3,4]); ctx.strokeStyle = 'rgba(0,230,118,0.55)'; ctx.lineWidth = 1;
+  if (lp) {
+    const ly=toY(lp);
+    ctx.setLineDash([3,4]); ctx.strokeStyle=crashStarted?'rgba(255,61,87,0.6)':'rgba(0,230,118,0.55)'; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(pL,ly); ctx.lineTo(pL+cW2,ly); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = '#00e676';
-    ctx.fillRect(pL+cW2+1, ly-8, pR-3, 16);
-    ctx.fillStyle = '#050f09'; ctx.font = 'bold 9px Share Tech Mono,monospace'; ctx.textAlign = 'center';
-    ctx.fillText('$'+livePrice.toFixed(2), pL+cW2+1+(pR-3)/2, ly+3);
+    ctx.fillStyle=crashStarted?'#ff3d57':'#00e676';
+    ctx.fillRect(pL+cW2+1,ly-8,pR-3,16);
+    ctx.fillStyle='#050f09'; ctx.font='bold 9px Share Tech Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText('$'+lp.toFixed(2),pL+cW2+1+(pR-3)/2,ly+3);
   }
-
-  // ── "1m" label top-left ──
-  ctx.fillStyle = 'rgba(33,150,243,0.7)';
-  ctx.fillRect(pL+2, pT+2, 22, 14);
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Share Tech Mono,monospace'; ctx.textAlign = 'center';
-  ctx.fillText('1m', pL+13, pT+11);
+  if (crashStarted) {
+    const cx=pL+(n-1)*slotW+slotW/2;
+    ctx.strokeStyle='rgba(255,61,87,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(cx,pT); ctx.lineTo(cx,pT+cH2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,61,87,0.85)'; ctx.font='bold 8px Share Tech Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText('NEWS',cx,pT+10);
+  }
+  ctx.fillStyle='rgba(33,150,243,0.7)'; ctx.fillRect(pL+2,pT+2,22,14);
+  ctx.fillStyle='#fff'; ctx.font='bold 9px Share Tech Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('1m',pL+13,pT+11);
 }
 
-// ── Order book ────────────────────────────────────────────────
 function updateOB(mid) {
   const rowsS=[], rowsB=[];
-  const obSeed = Math.floor(Date.now() / 3000);
-  const rng = makePRNG((obSeed * 1234567) >>> 0);
-  for (let i=6; i>=1; i--) {
-    const off = i*(0.003+rng()*0.005), sz = Math.floor(rng()*8000+500);
-    rowsS.push({p:(mid+off).toFixed(3), sz:sz.toLocaleString(), w:Math.round(sz/8500*100)});
-  }
-  for (let i=1; i<=6; i++) {
-    const off = i*(0.003+rng()*0.005), sz = Math.floor(rng()*8000+500);
-    rowsB.push({p:(mid-off).toFixed(3), sz:sz.toLocaleString(), w:Math.round(sz/8500*100)});
-  }
-  document.getElementById('ob-s').innerHTML = rowsS.map(r=>`<div class="ob-r s"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
-  document.getElementById('ob-b').innerHTML = rowsB.map(r=>`<div class="ob-r b"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
+  const rng=makePRNG((Math.floor(Date.now()/3000)*1234567)>>>0);
+  for (let i=6;i>=1;i--) { const off=i*(0.003+rng()*0.005),sz=Math.floor(rng()*8000+500); rowsS.push({p:(mid+off).toFixed(3),sz:sz.toLocaleString(),w:Math.round(sz/8500*100)}); }
+  for (let i=1;i<=6;i++) { const off=i*(0.003+rng()*0.005),sz=Math.floor(rng()*8000+500); rowsB.push({p:(mid-off).toFixed(3),sz:sz.toLocaleString(),w:Math.round(sz/8500*100)}); }
+  document.getElementById('ob-s').innerHTML=rowsS.map(r=>`<div class="ob-r s"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
+  document.getElementById('ob-b').innerHTML=rowsB.map(r=>`<div class="ob-r b"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
 }
 
-// ── UI update ─────────────────────────────────────────────────
-let prevPrice = null;
+function updateCountdown() {
+  const now=new Date(), event=getNewsTime(), diff=event-now;
+  const el=document.getElementById('cd-timer');
+  
+  // If the target day has already passed or we already crashed
+  if (now.getDate() !== event.getDate() || now.getMonth() !== event.getMonth() || now.getFullYear() !== event.getFullYear()) {
+    if (now > event || hasCrashedBefore) {
+      el.textContent='LIVE'; el.className='cd-timer urgent'; return;
+    } else {
+      el.textContent='--:--:--'; return;
+    }
+  }
+
+  if (diff<=0) { el.textContent='LIVE'; el.className='cd-timer urgent'; return; }
+  const h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+  el.textContent=h.toString().padStart(2,'0')+':'+m.toString().padStart(2,'0')+':'+s.toString().padStart(2,'0');
+  el.className=diff<60000?'cd-timer urgent':'cd-timer';
+}
+
+function triggerCrash(currentPrice) {
+  if (newsTriggered && !hasCrashedBefore) return;
+  newsTriggered=true; crashStarted=true;
+  localStorage.setItem('ondo2_crashed_20260610', 'true'); // lock the state
+
+  if (!hasCrashedBefore) {
+    crashFrom=currentPrice; crashProgress=0;
+    const totalSteps=CRASH_SECS*10; let step=0;
+    crashInterval=setInterval(()=>{ step++; crashProgress=Math.pow(step/totalSteps,1.5); if(step>=totalSteps){crashProgress=1;clearInterval(crashInterval);} },100);
+  }
+  
+  document.getElementById('news-banner').classList.add('show');
+  document.getElementById('nb-body').textContent='ONDO 2 emergency sell-off! Price collapsed ' + (!hasCrashedBefore ? 'from $'+currentPrice.toFixed(2) : '') + ' → $'+NEWS_PRICE;
+  document.getElementById('cd-label').textContent='🚨 NEWS EVENT TRIGGERED';
+  document.getElementById('cd-desc').textContent='Price collapsed to $'+NEWS_PRICE;
+  document.getElementById('cd-timer').textContent='LIVE';
+  document.getElementById('cd-timer').className='cd-timer urgent';
+}
+
+// Initial setup if it was already crashed on a previous session
+if (hasCrashedBefore) {
+  triggerCrash(NEWS_PRICE);
+}
+
+let prevPrice=null;
 function updateUI(lp) {
-  const dayNum = getDayNum();
-  const p = lp, fmt = p.toFixed(2);
-  const isUp = prevPrice === null ? true : p >= prevPrice;
-
-  const tb = document.getElementById('tb-p');
-  tb.textContent = '$'+fmt;
-  tb.className = 'tb-price '+(isUp?'up':'dn');
-  setTimeout(() => tb.className = 'tb-price', 200);
-
-  document.getElementById('st-p').textContent = '$'+fmt;
-
-  const yestPrice = getDayPrice(Math.max(0, dayNum-1));
-  const chg = p - yestPrice, pct = (chg/yestPrice*100).toFixed(2);
-  document.getElementById('tb-chg').textContent = (chg>=0?'▲ +':'▼ ')+'$'+Math.abs(chg).toFixed(2)+' ('+pct+'%)';
-  document.getElementById('tb-chg').style.color = chg>=0?'#00e676':'#ff3d57';
-  document.getElementById('st-c').textContent = (chg>=0?'+':'')+pct+'%';
-  document.getElementById('st-c').style.color  = chg>=0?'#00e676':'#ff3d57';
-
-  document.getElementById('tb-hi').textContent = '$'+(p+0.45).toFixed(2);
-  document.getElementById('tb-lo').textContent = '$'+Math.max(0.01,p-0.22).toFixed(2);
-
-  const total = HOLDINGS * p;
-  const balEl = document.getElementById('b-usd');
-  balEl.textContent = '$'+total.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  balEl.className = 'bc-total pulse';
-  setTimeout(() => balEl.className = 'bc-total', 300);
-  document.getElementById('b-sub').textContent = '@ $'+fmt+' per ONDO 2';
-  document.getElementById('ob-m').textContent  = '$'+p.toFixed(4);
-  document.getElementById('ob-m').style.color  = isUp?'#00e676':'#ff3d57';
-
-  document.getElementById('cur-serial').textContent = 437 + dayNum * 89;
+  const dayNum=getDayNum(), p=lp, fmt=p.toFixed(2);
+  const isUp=prevPrice===null?true:p>=prevPrice;
+  const tb=document.getElementById('tb-p');
+  tb.textContent='$'+fmt; tb.className='tb-price '+(isUp?'up':'dn');
+  setTimeout(()=>tb.className='tb-price',200);
+  document.getElementById('st-p').textContent='$'+fmt;
+  const yp=getDayPrice(Math.max(0,dayNum-1)), chg=p-yp, pct=(chg/yp*100).toFixed(2);
+  document.getElementById('tb-chg').textContent=(chg>=0?'▲ +':'▼ ')+'$'+Math.abs(chg).toFixed(2)+' ('+pct+'%)';
+  document.getElementById('tb-chg').style.color=chg>=0?'#00e676':'#ff3d57';
+  document.getElementById('st-c').textContent=(chg>=0?'+':'')+pct+'%';
+  document.getElementById('st-c').style.color=chg>=0?'#00e676':'#ff3d57';
+  document.getElementById('tb-hi').textContent='$'+(p+0.45).toFixed(2);
+  document.getElementById('tb-lo').textContent='$'+Math.max(0.01,p-0.22).toFixed(2);
+  const balEl=document.getElementById('b-usd');
+  balEl.textContent='$'+(HOLDINGS*p).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  balEl.className=crashStarted?'bc-total crash':'bc-total pulse';
+  if(!crashStarted) setTimeout(()=>balEl.className='bc-total',300);
+  document.getElementById('b-sub').textContent='@ $'+fmt+' per ONDO 2';
+  document.getElementById('ob-m').textContent='$'+p.toFixed(4);
+  document.getElementById('ob-m').style.color=isUp?'#00e676':'#ff3d57';
+  document.getElementById('cur-serial').textContent=572+dayNum*89;
   updateOB(p);
 }
 
-// ── Main tick ─────────────────────────────────────────────────
 function tick() {
-  const dayNum  = getDayNum();
-  const dayBase = getDayPrice(dayNum);
-  const lp      = computeLivePrice(dayBase);
-
-  advanceCandles(lp, dayBase);
-  updateUI(lp);
-  drawChart(lp);
-
-  prevPrice = lp;
+  const dayNum=getDayNum(), dayBase=getDayPrice(dayNum), lp=computeLivePrice(dayBase);
+  const now = new Date();
+  const eventTime = getNewsTime();
+  
+  // Trigger strictly on the exact fixed date and time
+  if (!newsTriggered && now.getFullYear() === eventTime.getFullYear() && now.getMonth() === eventTime.getMonth() && now.getDate() === eventTime.getDate() && now >= eventTime) {
+    triggerCrash(lp);
+  }
+  
+  advanceCandles(lp); updateUI(lp); drawChart(lp); updateCountdown();
+  prevPrice=lp;
 }
 
-// ── Init ──────────────────────────────────────────────────────
-seedCandles();
-tick();
-setInterval(tick, 1000);
-window.addEventListener('resize', () => {
-  const lp = computeLivePrice(getDayPrice(getDayNum()));
-  drawChart(lp);
-});
+seedCandles(); tick();
+setInterval(tick,1000);
+window.addEventListener('resize',()=>drawChart(computeLivePrice(getDayPrice(getDayNum()))));
 </script>
