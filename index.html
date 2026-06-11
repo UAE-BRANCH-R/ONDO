@@ -1,3 +1,4 @@
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -37,7 +38,6 @@ canvas#cc{display:block;width:100%}
 .bc-crypto{font-family:var(--mono);font-size:13px;color:var(--text2)}
 .bc-total{font-family:var(--mono);font-size:30px;color:var(--green);font-weight:600;transition:color 0.3s}
 .bc-total.pulse{color:#00ff99}
-.bc-total.crash{color:var(--red)!important}
 .bc-sub{font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:2px}
 .serial-card{background:var(--bg2);margin:0 12px 10px;border-radius:6px;border:1px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
 .sc2-blk{display:flex;flex-direction:column;gap:3px}
@@ -56,127 +56,148 @@ canvas#cc{display:block;width:100%}
 .ob-r.s .bg{background:var(--red)}.ob-r.b .bg{background:var(--green)}
 .ob-r.s .p{color:var(--red)}.ob-r.b .p{color:var(--green)}
 .ob-r .sz{color:var(--text3);font-size:9px}
-.news-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;padding:10px 14px;background:#1a0005;border-bottom:2px solid var(--red);animation:slideDown 0.4s ease}
-.news-banner.show{display:flex;align-items:center;gap:10px}
-@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
-.nb-icon{font-size:18px;flex-shrink:0}
-.nb-text{flex:1}
-.nb-title{font-family:var(--mono);font-size:11px;color:var(--red);font-weight:700;letter-spacing:1px}
-.nb-body{font-size:10px;color:var(--text2);margin-top:2px;font-family:var(--ui)}
-.nb-close{font-family:var(--mono);font-size:11px;color:var(--text3);cursor:pointer;padding:2px 6px;border:1px solid var(--border2);border-radius:2px}
-.countdown-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 14px;display:flex;align-items:center;justify-content:space-between}
-.cd-label{font-size:9px;color:var(--text3);font-family:var(--mono);letter-spacing:1px}
-.cd-timer{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:2px}
-.cd-desc{font-size:9px;color:var(--red);font-family:var(--mono)}
-.cd-timer.urgent{color:var(--red);animation:blink 0.5s step-end infinite}
-@keyframes blink{50%{opacity:0}}
+.sell-panel{background:var(--bg2);margin:0 12px 12px;border-radius:6px;border:1px solid var(--border);overflow:hidden}
+.sp-hdr{padding:8px 12px;border-bottom:1px solid var(--border);font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:1px}
+.sp-body{padding:12px 14px}
+.sp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sp-lbl{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.sp-val{font-family:var(--mono);font-size:11px;color:var(--text2)}
+.sp-input-row{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+.sp-input{background:#0a0e14;border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:13px;padding:7px 10px;flex:1;outline:none}
+.sp-input:focus{border-color:var(--blue)}
+.sp-max{background:#0a1828;border:1px solid var(--border2);color:var(--blue);font-family:var(--mono);font-size:9px;padding:4px 8px;border-radius:3px;cursor:pointer;letter-spacing:1px}
+.sp-max:hover{background:#0d1e3a}
+.sell-btn{width:100%;padding:12px;background:linear-gradient(135deg,#3a0010,#1a0008);border:1px solid var(--red);border-radius:5px;color:var(--red);font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all 0.15s}
+.sell-btn:hover{background:#2a0010;border-color:#ff6080;color:#ff6080}
+.sell-btn:disabled{opacity:0.4;cursor:not-allowed}
+.orders-card{background:var(--bg2);margin:0 12px 12px;border-radius:6px;border:1px solid var(--border);overflow:hidden}
+.orders-hdr{padding:8px 12px;border-bottom:1px solid var(--border);font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:1px}
+.order-row{padding:8px 12px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;display:flex;flex-direction:column;gap:4px}
+.order-row:last-child{border-bottom:none}
+.or-top{display:flex;justify-content:space-between;align-items:center}
+.or-id{color:var(--text3);font-size:9px}
+.or-status{font-size:9px;padding:2px 7px;border-radius:2px;letter-spacing:1px;font-weight:700}
+.or-status.processing{background:#0a1828;color:var(--blue);border:1px solid var(--border2)}
+.or-status.pending{background:#1a1200;color:var(--gold);border:1px solid #3a2800}
+.or-status.success{background:#021a0a;color:var(--green);border:1px solid #0a3018}
+.or-info{display:flex;justify-content:space-between;align-items:center}
+.or-amount{color:var(--text2)}
+.or-price{color:var(--text3);font-size:9px}
+.or-timer{color:var(--text3);font-size:9px}
+.no-orders{padding:16px 12px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--text3)}
 </style>
 
-<div class="news-banner" id="news-banner">
-    <div class="nb-icon">🚨</div>
-    <div class="nb-text">
-        <div class="nb-title">⚡ BREAKING NEWS — MARKET ALERT</div>
-        <div class="nb-body" id="nb-body">Major sell-off triggered. ONDO 2 price collapsed to $0.06</div>
-      </div>
-    <div class="nb-close" onclick="document.getElementById('news-banner').classList.remove('show')">✕</div>
-</div>
-
 <div class="app" id="main-app">
-    <div class="topbar">
-        <div class="tb-left">
-            <div class="tb-pair">ONDO 2 / USDT</div>
-            <div class="tb-price" id="tb-p">—</div>
-            <div class="tb-chg" id="tb-chg">—</div>
-          </div>
-        <div class="tb-right">
-            <div style="display:flex;gap:6px">
-                <span class="tb-badge-live">● LIVE</span>
-                <span class="tb-badge-vo">VIEW ONLY</span>
-              </div>
-            <div class="tb-stats">
-                <div class="tb-stat"><div class="tb-slbl">HIGH</div><div class="tb-sval" id="tb-hi">—</div></div>
-                <div class="tb-stat"><div class="tb-slbl">LOW</div><div class="tb-sval" id="tb-lo">—</div></div>
-                <div class="tb-stat"><div class="tb-slbl">VOL</div><div class="tb-sval">3.12M</div></div>
-              </div>
-          </div>
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-pair">ONDO 2 / USDT</div>
+      <div class="tb-price" id="tb-p">—</div>
+      <div class="tb-chg" id="tb-chg">—</div>
+    </div>
+    <div class="tb-right">
+      <div style="display:flex;gap:6px">
+        <span class="tb-badge-live">● LIVE</span>
+        <span class="tb-badge-vo">VIEW ONLY</span>
       </div>
+      <div class="tb-stats">
+        <div class="tb-stat"><div class="tb-slbl">HIGH</div><div class="tb-sval" id="tb-hi">—</div></div>
+        <div class="tb-stat"><div class="tb-slbl">LOW</div><div class="tb-sval" id="tb-lo">—</div></div>
+        <div class="tb-stat"><div class="tb-slbl">VOL</div><div class="tb-sval">3.12M</div></div>
+      </div>
+    </div>
+  </div>
 
-    <div class="countdown-bar">
-        <div>
-            
-          </div>
-        
-      </div>
+  <div class="chart-wrap" id="cw">
+    <canvas id="cc"></canvas>
+  </div>
 
-    <div class="chart-wrap" id="cw">
-        <canvas id="cc"></canvas>
-      </div>
+  <div class="stats-row">
+    <div class="stat-cell"><div class="sc-lbl">PRICE</div><div class="sc-val" id="st-p">—</div></div>
+    <div class="stat-cell"><div class="sc-lbl">CHG</div><div class="sc-val" id="st-c">—</div></div>
+    <div class="stat-cell"><div class="sc-lbl">1M TF</div><div class="sc-val" style="color:var(--blue)">● LIVE</div></div>
+  </div>
 
-    <div class="stats-row">
-        <div class="stat-cell"><div class="sc-lbl">PRICE</div><div class="sc-val" id="st-p">—</div></div>
-        <div class="stat-cell"><div class="sc-lbl">CHG</div><div class="sc-val" id="st-c">—</div></div>
-        <div class="stat-cell"><div class="sc-lbl">1M TF</div><div class="sc-val" style="color:var(--blue)">● LIVE</div></div>
-      </div>
+  <div class="balance-card">
+    <div class="bc-row">
+      <div class="bc-lbl">PORTFOLIO VALUE</div>
+      <div class="bc-crypto" id="bc-holdings">207 ONDO 2</div>
+    </div>
+    <div class="bc-total" id="b-usd">—</div>
+    <div class="bc-sub" id="b-sub">calculating...</div>
+  </div>
 
-    <div class="balance-card">
-        <div class="bc-row">
-            <div class="bc-lbl">PORTFOLIO VALUE</div>
-            <div class="bc-crypto">207 ONDO 2</div>
-          </div>
-        <div class="bc-total" id="b-usd">—</div>
-        <div class="bc-sub" id="b-sub">calculating...</div>
-      </div>
+  <div class="serial-card">
+    <div class="sc2-blk">
+      <div class="sc2-lbl">YOUR SERIAL NUMBER</div>
+      <div class="sc2-num">1114</div>
+    </div>
+    <div class="sc2-div"></div>
+    <div class="sc2-blk" style="align-items:flex-end">
+      <div class="sc2-lbl">CURRENT SERIAL</div>
+      <div class="sc2-cur" id="cur-serial">—</div>
+    </div>
+  </div>
 
-    <div class="serial-card">
-        <div class="sc2-blk">
-            <div class="sc2-lbl">YOUR SERIAL NUMBER</div>
-            <div class="sc2-num">1114</div>
-          </div>
-        <div class="sc2-div"></div>
-        <div class="sc2-blk" style="align-items:flex-end">
-            <div class="sc2-lbl">CURRENT SERIAL</div>
-            <div class="sc2-cur" id="cur-serial">—</div>
-          </div>
+  <div class="sell-panel">
+    <div class="sp-hdr">SELL ONDO 2</div>
+    <div class="sp-body">
+      <div class="sp-row">
+        <div class="sp-lbl">AVAILABLE</div>
+        <div class="sp-val" id="sp-avail">— ONDO 2</div>
       </div>
+      <div class="sp-row">
+        <div class="sp-lbl">SELL PRICE</div>
+        <div class="sp-val" id="sp-price">—</div>
+      </div>
+      <div class="sp-input-row">
+        <input class="sp-input" type="number" id="sell-qty" placeholder="Quantity" min="0.01" step="0.01"/>
+        <button class="sp-max" id="btn-max">MAX</button>
+      </div>
+      <div class="sp-row" style="margin-bottom:12px">
+        <div class="sp-lbl">ESTIMATED VALUE</div>
+        <div class="sp-val" id="sp-est">$0.00</div>
+      </div>
+      <button class="sell-btn" id="btn-sell">▼ SELL ONDO 2</button>
+    </div>
+  </div>
 
-    <div class="ob-card">
-        <div class="ob-hdr"><span>ORDER BOOK</span><span style="color:var(--green)" id="ob-m">—</span></div>
-        <div class="ob-cols">
-            <div class="ob-col">
-                <div class="ob-col-hdr"><span>SELL</span><span>SIZE</span></div>
-                <div id="ob-s"></div>
-              </div>
-            <div class="ob-col">
-                <div class="ob-col-hdr"><span>BUY</span><span>SIZE</span></div>
-                <div id="ob-b"></div>
-              </div>
-          </div>
+  <div class="orders-card">
+    <div class="orders-hdr">ORDER HISTORY</div>
+    <div id="orders-list"><div class="no-orders">No orders yet</div></div>
+  </div>
+
+  <div class="ob-card">
+    <div class="ob-hdr"><span>ORDER BOOK</span><span style="color:var(--green)" id="ob-m">—</span></div>
+    <div class="ob-cols">
+      <div class="ob-col">
+        <div class="ob-col-hdr"><span>SELL</span><span>SIZE</span></div>
+        <div id="ob-s"></div>
       </div>
+      <div class="ob-col">
+        <div class="ob-col-hdr"><span>BUY</span><span>SIZE</span></div>
+        <div id="ob-b"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-const HOLDINGS    = 207;
-const START_PRICE = 18.412;
-const DAILY_DROP  = 1.00;
-const DAY_ZERO    = new Date('2026-06-08T00:00:00Z');
-const NEWS_PRICE  = 0.06;
-const CRASH_SECS  = 30;
+const PRICE_MIN = 0.049, PRICE_MAX = 0.093;
+const PRICE_MID = (PRICE_MIN + PRICE_MAX) / 2;
+const SLOT = 60, HISTORY = 60;
 
-// ── News time: Tonight at 10:50:00 PM (Fixed Date & Time) ────────────────────────
-function getNewsTime() {
-  return new Date(2026, 5, 10, 22, 50, 0, 0); // Month is 0-indexed (5 = June), 22:50 = 10:50 PM
+function loadState() {
+  try {
+    const s = localStorage.getItem('ondo2_state_v3');
+    if (s) return JSON.parse(s);
+  } catch(e) {}
+  return { holdings: 207, orders: [] };
+}
+function saveState(st) {
+  try { localStorage.setItem('ondo2_state_v3', JSON.stringify(st)); } catch(e) {}
 }
 
-let newsTriggered = false, crashStarted = false;
-let crashProgress = 0, crashFrom = 0, crashInterval = null;
-
-// Persistent crash detection via localStorage to avoid re-triggering or rolling back on page refresh
-const hasCrashedBefore = localStorage.getItem('ondo2_crashed_20260610');
-if (hasCrashedBefore) {
-  newsTriggered = true;
-  crashStarted = true;
-  crashProgress = 1;
-}
+let state = loadState();
 
 function makePRNG(seed) {
   let s = seed >>> 0;
@@ -188,49 +209,38 @@ function makePRNG(seed) {
   };
 }
 
-function getDayNum() {
-  return Math.max(0, Math.floor((Date.now() - DAY_ZERO.getTime()) / 86400000));
-}
-function getDayPrice(d) {
-  return Math.max(0.01, START_PRICE - d * DAILY_DROP);
-}
-
-function computeLivePrice(dayBase) {
-  if (crashStarted) {
-    if (hasCrashedBefore) return NEWS_PRICE;
-    return Math.max(NEWS_PRICE, crashFrom + (NEWS_PRICE - crashFrom) * Math.min(1, crashProgress));
-  }
+function computeLivePrice() {
   const nowSec = Math.floor(Date.now() / 1000);
   const rng = makePRNG((nowSec * 2654435761) >>> 0);
-  return Math.max(0.01, dayBase + (rng() - 0.5) * 0.06);
+  const wave1 = Math.sin(nowSec / 120) * 0.012;
+  const wave2 = Math.sin(nowSec / 47 + 1.3) * 0.006;
+  const noise = (rng() - 0.5) * 0.008;
+  const raw = PRICE_MID + wave1 + wave2 + noise;
+  return Math.max(PRICE_MIN + 0.001, Math.min(PRICE_MAX - 0.001, raw));
 }
 
-const SLOT = 60, HISTORY = 60;
 let candleData = [];
 
 function getMinuteSlot(s) { return Math.floor(s / SLOT) * SLOT; }
 
-function buildSealedCandle(slotT, dayBase) {
+function buildSealedCandle(slotT) {
   const rng = makePRNG((slotT ^ 0xDEADBEEF) >>> 0);
-  const nowSec = Math.floor(Date.now() / 1000);
-  const minsAgo = (nowSec - slotT) / 60;
-  const pumpProgress = Math.max(0, Math.min(1, 1 - minsAgo / HISTORY));
-  const dip = 3.0 * (1 - pumpProgress);
-  const slotBase = Math.max(0.01, dayBase - dip + (rng() - 0.5) * 0.15);
-  const dir = rng() > 0.42 ? 1 : -1, body = rng() * 0.08;
-  const o = slotBase, c = Math.max(0.01, o + dir * body);
-  const h = Math.max(o, c) + rng() * 0.04, l = Math.min(o, c) - rng() * 0.03;
+  const wave = Math.sin(slotT / 300) * 0.015 + Math.sin(slotT / 83 + 0.7) * 0.007;
+  const slotBase = Math.max(PRICE_MIN+0.002, Math.min(PRICE_MAX-0.002, PRICE_MID + wave + (rng()-0.5)*0.010));
+  const dir = rng() > 0.42 ? 1 : -1, body = rng() * 0.007;
+  const o = slotBase, c = Math.max(PRICE_MIN+0.001, Math.min(PRICE_MAX-0.001, o + dir * body));
+  const h = Math.min(PRICE_MAX, Math.max(o,c) + rng()*0.004);
+  const l = Math.max(PRICE_MIN, Math.min(o,c) - rng()*0.003);
   return {t: slotT, o, h, l, c, sealed: true};
 }
 
 function seedCandles() {
   candleData = [];
-  const dayBase = getDayPrice(getDayNum());
   const nowSec = Math.floor(Date.now() / 1000);
   const curSlot = getMinuteSlot(nowSec);
   for (let i = HISTORY; i >= 1; i--)
-    candleData.push(buildSealedCandle(curSlot - i * SLOT, dayBase));
-  const lastClose = candleData.length ? candleData[candleData.length-1].c : dayBase;
+    candleData.push(buildSealedCandle(curSlot - i * SLOT));
+  const lastClose = candleData.length ? candleData[candleData.length-1].c : PRICE_MID;
   candleData.push({t: curSlot, o: lastClose, h: lastClose, l: lastClose, c: lastClose, sealed: false});
 }
 
@@ -262,7 +272,7 @@ function drawChart(lp) {
   const cW2=W-pL-pR, cH2=H-pT-pB;
   const prices = candleData.flatMap(c=>[c.h,c.l]);
   let minP=Math.min(...prices,lp), maxP=Math.max(...prices,lp);
-  const pad=(maxP-minP)*0.08; minP-=pad; maxP+=pad;
+  const pad=(maxP-minP)*0.1; minP-=pad; maxP+=pad;
   const pRng=maxP-minP, toY=p=>pT+(1-(p-minP)/pRng)*cH2;
   const n=candleData.length, slotW=cW2/n, bW=Math.max(1.5,slotW*0.72);
   ctx.lineWidth=0.5;
@@ -270,7 +280,7 @@ function drawChart(lp) {
     const y=pT+(cH2/5)*i, pv=maxP-(pRng/5)*i;
     ctx.strokeStyle='#151e2a'; ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(pL+cW2,y); ctx.stroke();
     ctx.fillStyle='#3a5570'; ctx.font='9px Share Tech Mono,monospace'; ctx.textAlign='right';
-    ctx.fillText('$'+pv.toFixed(2),pL-3,y+3);
+    ctx.fillText('$'+pv.toFixed(3),pL-3,y+3);
   }
   const step=Math.max(1,Math.floor(n/5));
   for (let i=0;i<n;i+=step) {
@@ -296,21 +306,13 @@ function drawChart(lp) {
   });
   if (lp) {
     const ly=toY(lp);
-    ctx.setLineDash([3,4]); ctx.strokeStyle=crashStarted?'rgba(255,61,87,0.6)':'rgba(0,230,118,0.55)'; ctx.lineWidth=1;
+    ctx.setLineDash([3,4]); ctx.strokeStyle='rgba(0,230,118,0.55)'; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(pL,ly); ctx.lineTo(pL+cW2,ly); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle=crashStarted?'#ff3d57':'#00e676';
+    ctx.fillStyle='#00e676';
     ctx.fillRect(pL+cW2+1,ly-8,pR-3,16);
     ctx.fillStyle='#050f09'; ctx.font='bold 9px Share Tech Mono,monospace'; ctx.textAlign='center';
-    ctx.fillText('$'+lp.toFixed(2),pL+cW2+1+(pR-3)/2,ly+3);
-  }
-  if (crashStarted) {
-    const cx=pL+(n-1)*slotW+slotW/2;
-    ctx.strokeStyle='rgba(255,61,87,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
-    ctx.beginPath(); ctx.moveTo(cx,pT); ctx.lineTo(cx,pT+cH2); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle='rgba(255,61,87,0.85)'; ctx.font='bold 8px Share Tech Mono,monospace'; ctx.textAlign='center';
-    ctx.fillText('NEWS',cx,pT+10);
+    ctx.fillText('$'+lp.toFixed(3),pL+cW2+1+(pR-3)/2,ly+3);
   }
   ctx.fillStyle='rgba(33,150,243,0.7)'; ctx.fillRect(pL+2,pT+2,22,14);
   ctx.fillStyle='#fff'; ctx.font='bold 9px Share Tech Mono,monospace'; ctx.textAlign='center';
@@ -320,96 +322,128 @@ function drawChart(lp) {
 function updateOB(mid) {
   const rowsS=[], rowsB=[];
   const rng=makePRNG((Math.floor(Date.now()/3000)*1234567)>>>0);
-  for (let i=6;i>=1;i--) { const off=i*(0.003+rng()*0.005),sz=Math.floor(rng()*8000+500); rowsS.push({p:(mid+off).toFixed(3),sz:sz.toLocaleString(),w:Math.round(sz/8500*100)}); }
-  for (let i=1;i<=6;i++) { const off=i*(0.003+rng()*0.005),sz=Math.floor(rng()*8000+500); rowsB.push({p:(mid-off).toFixed(3),sz:sz.toLocaleString(),w:Math.round(sz/8500*100)}); }
+  for (let i=6;i>=1;i--) { const off=i*(0.001+rng()*0.002),sz=Math.floor(rng()*8000+500); rowsS.push({p:(mid+off).toFixed(4),sz:sz.toLocaleString(),w:Math.round(sz/8500*100)}); }
+  for (let i=1;i<=6;i++) { const off=i*(0.001+rng()*0.002),sz=Math.floor(rng()*8000+500); rowsB.push({p:(mid-off).toFixed(4),sz:sz.toLocaleString(),w:Math.round(sz/8500*100)}); }
   document.getElementById('ob-s').innerHTML=rowsS.map(r=>`<div class="ob-r s"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
   document.getElementById('ob-b').innerHTML=rowsB.map(r=>`<div class="ob-r b"><div class="bg" style="width:${r.w}%"></div><span class="p">${r.p}</span><span class="sz">${r.sz}</span></div>`).join('');
 }
 
-function updateCountdown() {
-  const now=new Date(), event=getNewsTime(), diff=event-now;
-  const el=document.getElementById('cd-timer');
-  
-  // If the target day has already passed or we already crashed
-  if (now.getDate() !== event.getDate() || now.getMonth() !== event.getMonth() || now.getFullYear() !== event.getFullYear()) {
-    if (now > event || hasCrashedBefore) {
-      el.textContent='LIVE'; el.className='cd-timer urgent'; return;
-    } else {
-      el.textContent='--:--:--'; return;
+function renderOrders() {
+  const el = document.getElementById('orders-list');
+  if (!state.orders.length) { el.innerHTML='<div class="no-orders">No orders yet</div>'; return; }
+  const sorted = [...state.orders].reverse();
+  el.innerHTML = sorted.map(o => {
+    const now = Date.now();
+    let statusClass, statusText, timerText='';
+    if (o.status === 'processing') {
+      const elapsed = now - o.createdAt;
+      const remaining = Math.max(0, 3600000 - elapsed);
+      if (remaining <= 0) { o.status = 'pending'; saveState(state); }
+      else {
+        const m = Math.floor(remaining/60000), s = Math.floor((remaining%60000)/1000);
+        timerText = m+'m '+s+'s remaining';
+      }
     }
-  }
-
-  if (diff<=0) { el.textContent='LIVE'; el.className='cd-timer urgent'; return; }
-  const h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
-  el.textContent=h.toString().padStart(2,'0')+':'+m.toString().padStart(2,'0')+':'+s.toString().padStart(2,'0');
-  el.className=diff<60000?'cd-timer urgent':'cd-timer';
+    if (o.status === 'pending') {
+      const elapsed = now - o.createdAt;
+      const remaining = Math.max(0, 7200000 - elapsed);
+      if (remaining <= 0) { o.status = 'success'; saveState(state); }
+      else {
+        const m = Math.floor(remaining/60000), s = Math.floor((remaining%60000)/1000);
+        timerText = m+'m '+s+'s to complete';
+      }
+    }
+    if (o.status === 'processing') { statusClass='processing'; statusText='PROCESSING'; }
+    else if (o.status === 'pending') { statusClass='pending'; statusText='PENDING'; }
+    else { statusClass='success'; statusText='SUCCESS'; timerText='Completed'; }
+    return `<div class="order-row">
+      <div class="or-top">
+        <div class="or-id">ORDER #${o.id}</div>
+        <div class="or-status ${statusClass}">${statusText}</div>
+      </div>
+      <div class="or-info">
+        <div class="or-amount">${o.qty.toFixed(4)} ONDO 2 → $${o.value.toFixed(4)}</div>
+        <div class="or-price">@ $${o.price.toFixed(4)}</div>
+      </div>
+      <div class="or-timer">${timerText}</div>
+    </div>`;
+  }).join('');
 }
 
-function triggerCrash(currentPrice) {
-  if (newsTriggered && !hasCrashedBefore) return;
-  newsTriggered=true; crashStarted=true;
-  localStorage.setItem('ondo2_crashed_20260610', 'true'); // lock the state
+let prevPrice = null;
 
-  if (!hasCrashedBefore) {
-    crashFrom=currentPrice; crashProgress=0;
-    const totalSteps=CRASH_SECS*10; let step=0;
-    crashInterval=setInterval(()=>{ step++; crashProgress=Math.pow(step/totalSteps,1.5); if(step>=totalSteps){crashProgress=1;clearInterval(crashInterval);} },100);
-  }
-  
-  document.getElementById('news-banner').classList.add('show');
-  document.getElementById('nb-body').textContent='ONDO 2 emergency sell-off! Price collapsed ' + (!hasCrashedBefore ? 'from $'+currentPrice.toFixed(2) : '') + ' → $'+NEWS_PRICE;
-  document.getElementById('cd-label').textContent='🚨 NEWS EVENT TRIGGERED';
-  document.getElementById('cd-desc').textContent='Price collapsed to $'+NEWS_PRICE;
-  document.getElementById('cd-timer').textContent='LIVE';
-  document.getElementById('cd-timer').className='cd-timer urgent';
-}
-
-// Initial setup if it was already crashed on a previous session
-if (hasCrashedBefore) {
-  triggerCrash(NEWS_PRICE);
-}
-
-let prevPrice=null;
 function updateUI(lp) {
-  const dayNum=getDayNum(), p=lp, fmt=p.toFixed(2);
-  const isUp=prevPrice===null?true:p>=prevPrice;
-  const tb=document.getElementById('tb-p');
+  const p = lp, fmt = p.toFixed(4);
+  const isUp = prevPrice === null ? true : p >= prevPrice;
+  const tb = document.getElementById('tb-p');
   tb.textContent='$'+fmt; tb.className='tb-price '+(isUp?'up':'dn');
   setTimeout(()=>tb.className='tb-price',200);
   document.getElementById('st-p').textContent='$'+fmt;
-  const yp=getDayPrice(Math.max(0,dayNum-1)), chg=p-yp, pct=(chg/yp*100).toFixed(2);
-  document.getElementById('tb-chg').textContent=(chg>=0?'▲ +':'▼ ')+'$'+Math.abs(chg).toFixed(2)+' ('+pct+'%)';
+  const ref = PRICE_MID;
+  const chg = p - ref, pct = (chg/ref*100).toFixed(2);
+  document.getElementById('tb-chg').textContent=(chg>=0?'▲ +':'▼ ')+'$'+Math.abs(chg).toFixed(4)+' ('+pct+'%)';
   document.getElementById('tb-chg').style.color=chg>=0?'#00e676':'#ff3d57';
   document.getElementById('st-c').textContent=(chg>=0?'+':'')+pct+'%';
   document.getElementById('st-c').style.color=chg>=0?'#00e676':'#ff3d57';
-  document.getElementById('tb-hi').textContent='$'+(p+0.45).toFixed(2);
-  document.getElementById('tb-lo').textContent='$'+Math.max(0.01,p-0.22).toFixed(2);
-  const balEl=document.getElementById('b-usd');
-  balEl.textContent='$'+(HOLDINGS*p).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  balEl.className=crashStarted?'bc-total crash':'bc-total pulse';
-  if(!crashStarted) setTimeout(()=>balEl.className='bc-total',300);
+  document.getElementById('tb-hi').textContent='$'+PRICE_MAX.toFixed(3);
+  document.getElementById('tb-lo').textContent='$'+PRICE_MIN.toFixed(3);
+  const h = state.holdings;
+  document.getElementById('bc-holdings').textContent=h.toFixed(4)+' ONDO 2';
+  const balEl = document.getElementById('b-usd');
+  balEl.textContent='$'+(h*p).toLocaleString('en-US',{minimumFractionDigits:4,maximumFractionDigits:4});
+  balEl.className='bc-total pulse';
+  setTimeout(()=>balEl.className='bc-total',300);
   document.getElementById('b-sub').textContent='@ $'+fmt+' per ONDO 2';
   document.getElementById('ob-m').textContent='$'+p.toFixed(4);
   document.getElementById('ob-m').style.color=isUp?'#00e676':'#ff3d57';
-  document.getElementById('cur-serial').textContent=572+dayNum*89;
+  document.getElementById('cur-serial').textContent=572+Math.floor((Date.now()-new Date('2026-06-08T00:00:00Z').getTime())/86400000)*89;
+  document.getElementById('sp-avail').textContent=h.toFixed(4)+' ONDO 2';
+  document.getElementById('sp-price').textContent='$'+fmt;
+  const qty = parseFloat(document.getElementById('sell-qty').value)||0;
+  document.getElementById('sp-est').textContent='$'+(qty*p).toFixed(4);
   updateOB(p);
+  renderOrders();
+  prevPrice = lp;
 }
 
-function tick() {
-  const dayNum=getDayNum(), dayBase=getDayPrice(dayNum), lp=computeLivePrice(dayBase);
-  const now = new Date();
-  const eventTime = getNewsTime();
-  
-  // Trigger strictly on the exact fixed date and time
-  if (!newsTriggered && now.getFullYear() === eventTime.getFullYear() && now.getMonth() === eventTime.getMonth() && now.getDate() === eventTime.getDate() && now >= eventTime) {
-    triggerCrash(lp);
-  }
-  
-  advanceCandles(lp); updateUI(lp); drawChart(lp); updateCountdown();
-  prevPrice=lp;
-}
+document.getElementById('sell-qty').addEventListener('input', () => {
+  const lp = computeLivePrice();
+  const qty = parseFloat(document.getElementById('sell-qty').value)||0;
+  document.getElementById('sp-est').textContent='$'+(qty*lp).toFixed(4);
+});
 
-seedCandles(); tick();
-setInterval(tick,1000);
-window.addEventListener('resize',()=>drawChart(computeLivePrice(getDayPrice(getDayNum()))));
+document.getElementById('btn-max').addEventListener('click', () => {
+  document.getElementById('sell-qty').value = state.holdings.toFixed(4);
+  const lp = computeLivePrice();
+  document.getElementById('sp-est').textContent='$'+(state.holdings*lp).toFixed(4);
+});
+
+document.getElementById('btn-sell').addEventListener('click', () => {
+  const qty = parseFloat(document.getElementById('sell-qty').value);
+  if (!qty || qty <= 0) { alert('Enter a valid quantity'); return; }
+  if (qty > state.holdings) { alert('Insufficient balance'); return; }
+  const lp = computeLivePrice();
+  const orderId = 'O'+Date.now().toString().slice(-6);
+  const order = { id: orderId, qty, price: lp, value: qty*lp, createdAt: Date.now(), status: 'processing' };
+  state.holdings -= qty;
+  state.orders.push(order);
+  saveState(state);
+  document.getElementById('sell-qty').value = '';
+  document.getElementById('sp-est').textContent='$0.0000';
+  renderOrders();
+  updateUI(lp);
+});
+
+seedCandles();
+let lp = computeLivePrice();
+updateUI(lp); drawChart(lp);
+
+setInterval(() => {
+  lp = computeLivePrice();
+  advanceCandles(lp);
+  updateUI(lp);
+  drawChart(lp);
+}, 1000);
+
+window.addEventListener('resize', () => drawChart(computeLivePrice()));
 </script>
